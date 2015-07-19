@@ -1,0 +1,43 @@
+---
+- name: New Relic | Check for newrelic_license_key
+  fail:
+    msg: "newrelic_license_key has not been defined"
+  when: newrelic_license_key|default(False) == False
+  tags: new-relic
+
+- name: New Relic | Add Apt Key
+  sudo: yes
+  apt_key: url=https://download.newrelic.com/548C16BF.gpg
+           id=548C16BF
+           state=present
+  tags: new-relic
+
+- name: New Relic | Add Repository
+  sudo: yes
+  apt_repository: repo='deb http://apt.newrelic.com/debian/ newrelic non-free'
+                  state=present
+  tags: new-relic
+
+- name: New Relic | Install newrelic-sysmond
+  sudo: yes
+  apt: pkg=newrelic-sysmond
+       update_cache=yes
+       cache_valid_time=86400
+       state=latest
+  tags: new-relic
+
+- name: New Relic | Configure New Relic Sysmond
+  sudo: yes
+  template: src=nrsysmond.cfg.j2
+            dest=/etc/newrelic/nrsysmond.cfg
+            group=newrelic
+            owner=root
+            mode=0640
+  tags: new-relic
+
+- name: New Relic | Restart New Relic
+  sudo: yes
+  service: name=newrelic-sysmond
+           state=restarted
+  tags: new-relic
+

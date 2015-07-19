@@ -1,0 +1,38 @@
+---
+- name: Duo Security | Add Duo Key
+  sudo: yes
+  apt_key: url=http://pkg.duosecurity.com/APT-GPG-KEY-DUO state=present
+  tags: duo-security
+
+- name: Duo Security | Add Duo Source
+  sudo: yes
+  copy: src=duosecurity.list dest=/etc/apt/sources.list.d/duosecurity.list
+  tags: duo-security
+
+- name: Duo Security | Install Duo Unix SSH Integration
+  sudo: yes
+  apt: name=duo-unix state=installed update_cache=yes
+  tags: duo-security
+
+- name: Duo Security | Install Duo config
+  sudo: yes
+  template: src=login_duo.conf.j2 dest=/etc/duo/login_duo.conf owner=sshd group=0 mode=0600
+  tags: duo-security
+
+- name: Duo Security | Enable duo security for remote logins
+  sudo: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp=^ForceCommand line="ForceCommand /usr/sbin/login_duo"
+  tags: duo-security
+
+- name: Duo Security | Disable PermitTunnel and AllowTcpForwarding
+  sudo: yes
+  lineinfile: dest=/etc/ssh/sshd_config state=present regexp=^{{ item.key }} line="{{ item.key }} {{ item.value }}" insertafter=EOF
+  with_items:
+    - { key: 'PermitTunnel', value: 'no' }
+    - { key: 'AllowTcpForwarding', value: 'no' }
+  tags: duo-security
+
+- name: Duo Security | Restart sshd
+  sudo: yes
+  service: name=ssh state=restarted
+  tags: duo-security
