@@ -1,0 +1,4 @@
+---
+deploy_app_release_date: "{{ lookup('pipe', 'date +%Y%m%d') }}"
+deploy_app_release_dir: "{{ app_dir }}/releases/{{ deploy_app_release_date }}"
+deploy_keep_releases: 3

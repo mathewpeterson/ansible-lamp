@@ -1,0 +1,84 @@
+---
+- name: Deploy | Clean path
+  sudo: yes
+  file: path={{ deploy_app_release_dir }}
+        state=absent
+  tags: deploy
+
+- name: Deploy | Clone repositgithory
+  git: repo={{ app_repository }}
+       dest={{ deploy_app_release_dir }}
+       accept_hostkey=yes
+       force=yes
+       recursive=no
+  tags: deploy
+
+- name: Deploy | Link shared resources
+  sudo: yes
+  file: src={{ app_dir }}/shared/{{ item }}
+        dest={{ deploy_app_release_dir }}/{{ item }}
+        owner={{ app_user }}
+        group={{ app_group }}
+        state=link
+  with_items:
+    - app/config/parameters.yml
+    - app/logs
+  tags: deploy
+
+- name: Deploy | Composer Install
+  composer: command=install
+            working_dir={{ deploy_app_release_dir }}
+            no_dev={{ app_composer_no_dev }}
+  environment:
+      SYMFONY_ENV: "{{ app_env }}"
+  tags: deploy
+
+- name: Deploy | Dump Assets
+  shell: app/console assetic:dump
+  args:
+      chdir: "{{ deploy_app_release_dir }}"
+  environment:
+      SYMFONY_ENV: "{{ app_env }}"
+  when: app_symfony == True and app_env == "prod"
+  tags: deploy
+
+- name: Deploy | Symfony Console
+  shell: "{{ item }}"
+  args:
+      chdir: "{{ deploy_app_release_dir }}"
+  environment:
+      SYMFONY_ENV: "{{ app_env }}"
+  with_items:
+      - app/console assetic:dump
+      - app/console cache:clear
+  when: app_symfony == True
+  tags: deploy
+
+- name: Deploy | Chown www-data
+  sudo: yes
+  file: path={{ deploy_app_release_dir }}
+        owner={{ app_user }}
+        group={{ app_group }}
+        recurse=yes
+  tags: deploy
+
+- name: Deploy | Remove current
+  sudo: yes
+  file: path={{ app_dir }}/current
+        state=absent
+  tags: deploy
+
+- name: Deploy | Link release
+  sudo: yes
+  file: src={{ deploy_app_release_dir }}
+        dest={{ app_dir }}/current
+        owner={{ app_user }}
+        group={{ app_group }}
+        state=link
+  tags: deploy
+
+- name: Deploy | Cleanup Releases
+  sudo: yes
+  shell: ls -1dt {{ app.dir}}/releases/* | tail -n +$(( {{ keep_releases }} + 1)) | xargs rm -rf
+  when: deploy_keep_releases > 0
+  tags: deploy

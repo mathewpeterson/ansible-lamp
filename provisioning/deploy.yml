@@ -1,0 +1,12 @@
+---
+-  hosts: stg
+   vars_file:
+     - ["vars/stg/app.yml", "vars/default.yml"]
+   roles:
+     - { role: deploy }
+
+-  hosts: prd
+   vars_file:
+     - ["vars/prd/app.yml", "vars/default.yml"]
+   roles:
+     - { role: deploy }
