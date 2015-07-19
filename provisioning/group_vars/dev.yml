@@ -1,0 +1,4 @@
+---
+  mysql_host: 127.0.0.1
+  mysql_root_pass: root
+  timezone: America/Chicago

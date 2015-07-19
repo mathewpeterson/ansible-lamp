@@ -1,0 +1,35 @@
+---
+- name: PHPMyAdmin | Configure debconf for PHPMyAdmin
+  sudo: yes
+  debconf: name=phpmyadmin question='phpmyadmin/dbconfig-install' value='true' vtype='boolean'
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Configure debconf for PHPMyAdmin
+  sudo: yes
+  debconf: name=phpmyadmin question='phpmyadmin/app-password-confirm' value='{{ mysql_root_pass }}' vtype='password'
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Configure debconf for PHPMyAdmin
+  sudo: yes
+  debconf: name=phpmyadmin question='phpmyadmin/mysql/admin-pass' value='{{ mysql_root_pass }}' vtype='password'
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Configure debconf for PHPMyAdmin
+  sudo: yes
+  debconf: name=phpmyadmin question='phpmyadmin/mysql/app-pass' value='{{ mysql_root_pass }}' vtype='password'
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Configure debconf for PHPMyAdmin
+  sudo: yes
+  debconf: name=phpmyadmin question='phpmyadmin/reconfigure-webserver' value='' vtype='multiselect'
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Install PHPMyAdmin
+  sudo: yes
+  apt: pkg=phpmyadmin state=present
+  tags: phpmyadmin
+
+- name: PHPMyAdmin | Restart Apache
+  sudo: yes
+  service: name=apache2 enabled=yes state=restarted
+  tags: phpmyadmin

@@ -1,0 +1,19 @@
+---
+php5_modules:
+  - php5-curl
+  - php5-gd
+  - php5-intl
+  - php5-json
+  - php5-mcrypt
+  - php5-mysql
+  - php5-sqlite
+
+php5_modules_enable:
+  - mcrypt
+
+php5_timezone: America/Chicago
+php5_display_errors: "Off"
+php5_display_startup_errors: "Off"
+php5_error_reporting: "-1"
+php5_log_errors: "On"
+php5_memory_limit: 256M

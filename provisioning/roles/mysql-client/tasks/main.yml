@@ -1,0 +1,5 @@
+---
+- name: MySQL | Installing Client
+  sudo: yes
+  apt: pkg=mysql-client
+  tags: mysql-client

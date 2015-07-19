@@ -1,0 +1,7 @@
+---
+php_timezone: America/Chicago
+php_display_errors: "Off"
+php_display_startup_errors: "Off"
+php_error_reporting: E_ALL
+php_log_errors: "On"
+php_memory_limit: 256M

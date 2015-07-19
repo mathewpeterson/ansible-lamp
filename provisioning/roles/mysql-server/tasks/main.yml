@@ -1,0 +1,57 @@
+---
+- name: MySQL | Install Server
+  sudo: yes
+  apt: pkg=mysql-server state=installed
+  tags: mysql-server
+
+- name: MySQL | Update my.cnf
+  sudo: yes
+  template: src=my.cnf dest=/etc/mysql/my.cnf
+  notify:
+    - restart mysql
+  tags: mysql-server
+
+- name: MySQL | Test root has blank password
+  shell: mysql -u root --password= --disable-column-names --batch -e 'select 1'
+  register: mysql_has_blank_root_password
+  ignore_errors: true
+  tags: mysql-server
+
+- name: MySQL | Remove anonymous users
+  ignore_errors: yes
+  mysql_user: name='' host={{ item }}
+      login_host={{ mysql_host }}
+      login_user=root
+      login_password=
+      state=absent
+  with_items:
+   - localhost
+   - "{{ ansible_hostname }}"
+   - "%"
+  when: mysql_has_blank_root_password.rc == 0
+  tags: mysql-server
+
+- name: MySQL | Remove test database
+  mysql_db: name=test
+      login_host={{ mysql_host }}
+      login_user=root
+      login_password=
+      state=absent
+  when: mysql_has_blank_root_password.rc == 0
+  tags: mysql-server
+
+- name: MySQL | Update Root Password
+  mysql_user: name=root
+      host={{ item }}
+      password={{ mysql_root_pass }}
+      login_host={{ mysql_host }}
+      login_user=root
+      login_password=
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ ansible_fqdn }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  when: mysql_has_blank_root_password.rc == 0
+  tags: mysql-server

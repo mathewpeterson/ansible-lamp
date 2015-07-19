@@ -1,0 +1,19 @@
+[stg:children]
+stg-web
+stg-sql
+
+[stg-web]
+# web1.stg.example.org ansible_ssh_user=ubuntu
+
+[stg-sql]
+# sql1.stg.example.org ansible_ssh_user=ubuntu
+
+[prd:children]
+prd-web
+prd-sql
+
+[prd-web]
+# web1.prd.example.org ansible_ssh_user=ubuntu
+
+[prd-sql]
+# sql1.prd.example.org ansible_ssh_user=ubuntu

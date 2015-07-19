@@ -1,0 +1,9 @@
+---
+  app_domain: ~
+  app_dir: ~
+  app_env: ~
+  app_environment: ~
+  app_db_username: ~
+  app_db_password: ~
+  app_databases:
+    - app

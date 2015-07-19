@@ -1,0 +1,34 @@
+---
+- name: Init | Set the hostname in /etc/hostname
+  sudo: yes
+  shell: echo {{ hostname }} > /etc/hostname
+  when: hostname is defined
+  tags: init
+
+- name: Init | Set the hostname
+  sudo: yes
+  shell: hostname {{ hostname }}
+  when: hostname is defined
+  tags: init
+
+- name: Init | Update /etc/hosts
+  sudo: yes
+  lineinfile: dest=/etc/hosts regexp='^127\.0\.0\.1'
+              line='127.0.0.1 localhost {{ hostname }}'
+              owner=root
+              group=root
+              mode=0644
+  tags: init
+
+- name: Init | Configure the timezone
+  sudo: yes
+  template: src=timezone.j2 dest=/etc/timezone
+  tags: init
+
+- name: Init | More Configure the timezone
+  sudo: yes
+  file: src=/usr/share/zoneinfo/{{ timezone }}
+        dest=/etc/localtime
+        state=link
+        force=yes
+  tags: init

@@ -1,0 +1,6 @@
+---
+  apache_modules:
+    - rewrite
+    - proxy
+    - proxy_fcgi
+    - proxy_http

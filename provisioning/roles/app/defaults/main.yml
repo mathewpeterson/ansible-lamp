@@ -1,0 +1,20 @@
+---
+  app_domain: app.local
+  app_dir: /var/www/{{ app_domain }}/www
+  app_repository: ~
+
+  app_env: prod
+  app_environment: production
+
+  app_user: www-data
+  app_group: www-data
+
+  app_db_host: localhost
+  app_db_port: ""
+  app_db_username: root
+  app_db_password: ""
+
+  app_databases:
+    - app
+
+  app_symfony: false

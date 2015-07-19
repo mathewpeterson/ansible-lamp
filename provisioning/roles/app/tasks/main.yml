@@ -1,0 +1,39 @@
+---
+- name: App | Install Apache vhost
+  sudo: yes
+  template: src=apache/vhost.conf dest=/etc/apache2/sites-available/{{ app_domain }}.conf
+  tags: app
+
+- name: App | Stat vhost.conf
+  stat: path=/etc/apache2/sites-enabled/{{ app_domain }}.conf
+  register: vhost_exists
+  tags: app
+
+- name: App | Enable  vhost
+  sudo: yes
+  shell: /usr/sbin/a2ensite {{ app_domain }}
+  when: vhost_exists.stat.exists == False
+  tags: app
+
+- name: App | Add ENVIRONMENT
+  sudo: yes
+  lineinfile: dest=/etc/apache2/conf-available/environment.conf create=yes line="SetEnv ENVIRONMENT {{ app_environment }}"
+  tags: app
+
+- name: App | Enable ENVIRONMENT
+  sudo: yes
+  shell: /usr/sbin/a2enconf environment
+  tags: app
+
+- name: App | Restart Apache
+  sudo: yes
+  service: name=apache2 enabled=yes state=restarted
+  tags: app
+
+- name: App | Create DB
+  mysql_db: name={{ item }} state=present
+            login_host={{ mysql_host }}
+            login_user=root
+            login_password={{ mysql_root_pass }}
+  with_items: app_databases
+  tags: app

@@ -1,0 +1,41 @@
+---
+- name: Users | Create Groups
+  sudo: yes
+  group: name={{ item }}
+  with_items: users.groups
+  tags: users
+
+- name: Users | Create Per-user Group
+  sudo: yes
+  group: name={{ item.id }}
+  with_items: users.users
+  tags: users
+
+- name: Users | Create Users
+  sudo: yes
+  user: name="{{ item.id }}"
+        group="{{ item.id }}"
+        groups="{{ item.groups|join(',') }}"
+        shell="{{ item.shell if item.shell is defined else users.default_shell }}"
+        password="{{ item.password if item.password is defined else 'no' }}"
+        comment="{{ item.comment|default('') }}"
+        createhome=yes
+  with_items: users.users
+  tags: users
+
+- name: Users | Authorized keys
+  sudo: yes
+  authorized_key: user={{ item.0.id }} key="{{ item.1 }}"
+  with_subelements:
+    - users.users
+    - ssh_keys
+  tags: users
+
+- name: Users | Deployer passwordless sudo
+  sudo: yes
+  lineinfile: dest=/etc/sudoers
+              regexp="^deployer ALL\="
+              line="deployer ALL=(ALL) NOPASSWD:ALL"
+              state=present
+              validate='visudo -cf %s'
+  tags: users

@@ -1,0 +1,18 @@
+<VirtualHost *:80>
+
+	ServerName {{ ansible_fqdn }}
+	DocumentRoot /var/www/{{ ansible_fqdn }}/web
+	LogLevel warn
+	ErrorLog /var/www/{{ ansible_fqdn }}/logs//error.log
+	CustomLog /var/www/{{ ansible_fqdn }}/logs/access.log combined
+
+	<Directory /var/www/{{ ansible_fqdn }}/web>
+		Options None
+		AllowOverride None
+	</Directory>
+
+{% if phpmyadmin_enabled %}
+  Include /etc/phpmyadmin/apache.conf
+{% endif %}
+
+</VirtualHost>

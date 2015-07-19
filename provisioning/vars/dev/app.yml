@@ -1,0 +1,9 @@
+---
+  app_domain: ansible-lamp.local
+  app_repository: git@github.com:mathewpeterson/ansible-lamp.git
+  app_env: dev
+  app_environment: development
+  app_db_username: root
+  app_db_password: root
+  app_databases:
+    - app

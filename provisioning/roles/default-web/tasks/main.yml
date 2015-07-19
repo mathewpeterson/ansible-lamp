@@ -1,0 +1,34 @@
+---
+- name: Default Web | Create site directories
+  sudo: yes
+  file: path=/var/www/{{ ansible_fqdn }}/{{ item.path }}
+        owner=www-data
+        group=www-data
+        state=directory
+        mode="u+rwx,g+rwx,o+rx"
+        recurse=yes
+  with_items:
+    - { path: logs }
+    - { path: web }
+  tags: default-web
+
+- name: Default Web | Install app vhost
+  sudo: yes
+  template: src=apache/vhost/vhost.conf.j2 dest=/etc/apache2/sites-available/{{ ansible_fqdn }}.conf
+  tags: default-web
+
+- name: Default Web | Stat enabled app vhost
+  stat: path=/etc/apache2/sites-enabled/{{ ansible_fqdn }}.conf
+  register: default_web_vhost_exists
+  tags: default-web
+
+- name: Default Web | Enable app vhost
+  sudo: yes
+  shell: /usr/sbin/a2ensite {{ ansible_fqdn }}
+  when: default_web_vhost_exists.stat.exists == False
+  tags: default-web
+
+- name: Default Web | Restart Apache
+  sudo: yes
+  service: name=apache2 enabled=yes state=restarted
+  tags: default-web

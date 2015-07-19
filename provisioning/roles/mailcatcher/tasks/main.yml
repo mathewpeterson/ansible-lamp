@@ -1,0 +1,40 @@
+- name: Mailcatcher | Install libsqlite3-dev
+  sudo: yes
+  apt: pkg=libsqlite3-dev
+  tags: mailcatcher
+
+- name: Mailcatcher | Install mailcatcher
+  sudo: yes
+  gem: name=mailcatcher state=latest user_install=no
+  tags: mailcatcher
+
+- name: Mailcatcher | Upstart mailcatcher
+  sudo: yes
+  template: src=mailcatcher.conf dest=/etc/init/mailcatcher.conf
+  tags: mailcatcher
+
+- name: Mailcatcher | Start Mailcatcher
+  sudo: yes
+  service: name=mailcatcher state=started
+  tags: mailcatcher
+
+- name: Mailcatcher | Install Apache vhost
+  sudo: yes
+  template: src=apache/mailcatcher.conf dest=/etc/apache2/sites-available/mailcatcher.conf
+  tags: mailcatcher
+
+- name: Mailcatcher | Stat mailcatcher.conf
+  stat: path=/etc/apache2/sites-enabled/mailcatcher.conf
+  register: mailcatcher_vhost_exists
+  tags: mailcatcher
+
+- name: Mailcatcher | Enable mailcatcher vhost
+  sudo: yes
+  shell: /usr/sbin/a2ensite mailcatcher
+  when: mailcatcher_vhost_exists.stat.exists == False
+  tags: mailcatcher
+
+- name: Mailcatcher | Restart Apache
+  sudo: yes
+  service: name=apache2 enabled=yes state=restarted
+  tags: mailcatcher

@@ -1,0 +1,16 @@
+---
+users:
+  groups: []
+  removed_users: []
+  default_shell: "/bin/bash"
+  users:
+    - id: mathewpeterson
+      groups:
+        - adm
+        - sudo
+      password: "$6$6zeVbjYM$CGquCJH0fzNz6Skm7ZuNEmC2xI9RxRVDFItyKl.WL2hpQrOlldf2cRao./rAOnYdT3ppZWEEgPBkY4I5kOsjj/"
+      home_dir: "/home/mathewpeterson"
+      shell: "/bin/bash"
+      ssh_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxiaYssTRpw+iGCUIE7XJ+I5mNeZnxEXLKxCDYPcHkuSfW62oeO7BNljo2GG1biFUS29we60zYjgk4D2RJsPDeEgTab1Z+o7zC35MFdpKnjvc3TS3LzTldImY0lOkxGEROzNuny3OCJ00ldaof63D3B9ittL89tb1JfxMJw5NX39/XIV795W30Qqz5ap8RswmyHnoiIpnIX9QKkNOd5434b4YrXnmhj3LeDKNMs8aoV72unAGJv3PqglR1J4Nx1xBRG+cASx0VOhJeIydCB69sGAj6hIin3w2ONXPJeaym9JF+HRhcJbozqA3JfgmyFnizksUqiB3b5HQJrBAzSAM4w== mathewpeterson@me.com"
+      comment: "Mathew Peterson <mathewpeterson@me.com>"

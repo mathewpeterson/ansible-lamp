@@ -1,0 +1,37 @@
+---
+  - hosts: ansible-lamp
+    vars:
+      hostname: ansible-lamp.local
+    roles:
+      - { role: init }
+
+  - hosts: all
+    vars_files:
+      - vars/default/common.yml
+    roles:
+      - { role: common }
+      - { role: user }
+      - { role: openssh }
+
+  - hosts: dev-sql
+    vars_files:
+      - group_vars/dev.yml
+    roles:
+      - { role: mysql-server }
+      - { role: mysql-backup }
+
+  - hosts: dev-web
+    vars_files:
+      - group_vars/dev.yml
+      - ["vars/dev/apache.yml", "vars/default/apache.yml"]
+      - ["vars/dev/php.yml", "vars/default/php.yml"]
+      - ["vars/dev/app.yml", "vars/default/app.yml"]
+    roles:
+      - { role: ruby }
+      - { role: apache }
+      - { role: mysql-client }
+      - { role: php5 }
+      - { role: composer }
+      - { role: phpmyadmin }
+      - { role: mailcatcher}
+      - { role: app }
