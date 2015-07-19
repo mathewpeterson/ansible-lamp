@@ -1,0 +1,12 @@
+---
+  mysql_backup:
+    home_dir: /usr/local/backups
+    user: root
+    group: root
+    db_username: backups
+    db_password: ~
+    db_hostname: localhost
+    ignore_dbs:
+      - test
+      - information_schema
+      - performance_schema

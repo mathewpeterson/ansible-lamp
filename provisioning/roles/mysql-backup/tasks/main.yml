@@ -1,0 +1,42 @@
+---
+- name: MySQL Backup | Create directories
+  sudo: yes
+  file: path={{ mysql_backup.home_dir }}/{{ item.path }}
+        owner={{ mysql_backup.user }}
+        group={{ mysql_backup.group }}
+        state=directory
+        mode="u+rwx,g+rwx,o-rwx"
+        recurse=yes
+  with_items:
+    - { path: bin }
+    - { path: files/mysql/current }
+  tags: mysql-backup
+
+- name: MySQL Backup | Copy script
+  sudo: yes
+  template: src=bin/mysql.sh.j2
+            dest={{ mysql_backup.home_dir }}/bin/mysql.sh
+            owner={{ mysql_backup.user }}
+            group={{ mysql_backup.group }}
+            mode="u+rwx,g+rwx,o-rwx"
+  tags: mysql-backup
+
+- name: MySQL Backup | Add cron job
+  sudo: yes
+  cron: name="mysql-backup"
+        minute="0"
+        hour="0"
+        job="{{ mysql_backup.home_dir }}/bin/mysql.sh &> /dev/null"
+        user="root"
+  tags: mysql-backup
+
+- name: MySQL Backup | Create DB User
+  mysql_user: name={{ mysql_backup.db_username }}
+      password={{ mysql_backup.db_password }}
+      priv=*.*:SELECT,"LOCK TABLES","SHOW DATABASES"
+      login_host={{ mysql_host }}
+      login_user=root
+      login_password={{ mysql_root_pass }}
+      append_privs=yes
+      state=present
+  tags: mysql-backup
