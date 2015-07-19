@@ -4,7 +4,7 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-["vagrant-hostsupdater", "vagrant-hostsupdater"].each do |plugin|
+["vagrant-auto_network", "vagrant-hostsupdater"].each do |plugin|
   unless Vagrant.has_plugin?(plugin)
     raise "#{plugin} plugin is not installed"
   end
